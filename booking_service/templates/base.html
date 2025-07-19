@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Сервис Бронирования{% endblock %}</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; margin: 0; padding: 0; background-color: #f4f4f4; }
+        header { background: #333; color: #fff; padding: 1rem 0; text-align: center; }
+        nav { background: #444; padding: 0.5rem; }
+        nav a { color: #fff; margin: 0 15px; text-decoration: none; }
+        .container { width: 80%; margin: 2rem auto; padding: 2rem; background: #fff; border-radius: 5px; }
+        h1, h2 { color: #333; }
+        ul { list-style: none; padding: 0; }
+        li { background: #eee; margin-bottom: 10px; padding: 15px; border-radius: 4px; }
+        a { color: #007bff; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><a href="{% url 'hotel_numbers:home' %}" style="color: #fff; text-decoration: none;">Сервис Бронирования Отелей</a></h1>
+    </header>
+
+    <nav>
+        <center>
+            <a href="{% url 'hotel_numbers:home' %}">Главная</a>
+            <a href="{% url 'hotel_numbers:hotel_list' %}">Все отели</a>
+        </center>
+    </nav>
+
+    <main class="container">
+        {% block content %}
+        <!-- Содержимое конкретной страницы будет здесь -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p style="text-align: center; color: #777; margin-top: 2rem;">© 2025 Наш Сервис Бронирования</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Номера '{{ category_name }}' в отеле {{ hotel.title }}{% endblock %}
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+        <ol>
+            <li><a href="{% url 'hotel_numbers:hotel_list' %}">Отели</a></li>
+            <li><a href="{% url 'hotel_numbers:hotel_detail' hotel.id %}">{{ hotel.title }}</a></li>
+            <li>Категория: {{ category_name }}</li>
+        </ol>
+    </nav>
+
+    <h1>Номера категории "{{ category_name }}"</h1>
+
+    {% if rooms %}
+        <ul>
+            {% for room in rooms %}
+                <li>
+                    <!-- Ссылка на детальную страницу номера -->
+                    <h3><a href="{% url 'hotel_numbers:room_detail' room.id %}">{{ room.title }}</a></h3>
+                    <p><strong>Цена:</strong> {{ room.price }} руб./ночь</p>
+                    <p><strong>Статус:</strong> {{ room.get_status_display }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>В данной категории нет доступных номеров.</p>
+    {% endif %}
+{% endblock %}

@@ -14,7 +14,10 @@ class AvailableManager(models.Manager):
 
 class Hotels(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название отеля')
-    city = models.CharField(max_length=255, verbose_name='Город')
+    city = models.CharField(max_length=255, verbose_name='Город', db_index=True)
+
+    objects = models.Manager()
+
 
     def __str__(self):
         return self.title
@@ -28,17 +31,27 @@ class Rooms(models.Model):
     class Status(models.IntegerChoices):
         BOOKED = 0, 'Зарезервирован'
         AVAILABLE = 1, 'Свободен'
+
+    class Categories(models.TextChoices):
+        REGULAR = 'RG', 'Обычный'
+        UPDATED = 'UP', 'Улучшенный'
+        DELUXE = 'DX', 'Делюкс'
+        REPRESENTATIVE = 'RP', 'Представительский'
+
     title = models.CharField(max_length=255, verbose_name='Название номера')
     price = models.DecimalField(max_digits=10, decimal_places=2, db_index=True,
                                 verbose_name='Цена за ночь')
     sleep_places = models.PositiveSmallIntegerField(verbose_name='Количество спальных мест')
     floor = models.PositiveSmallIntegerField(default=1, verbose_name='Этаж')
-    status = models.IntegerField(default=Status.AVAILABLE, choices=Status.choices, db_index=True, verbose_name='Статус')
+    category = models.CharField(max_length=2, choices=Categories.choices,
+                                default=Categories.REGULAR, verbose_name='Категория')
+    status = models.IntegerField(default=Status.AVAILABLE, choices=Status.choices,
+                                 db_index=True, verbose_name='Статус')
     date_start_booked = models.DateField(null=True, blank=True,
                                          verbose_name='Дата начала бронирования')
     date_end_booked = models.DateField(null=True, blank=True,
                                        verbose_name='Дата конца бронирования')
-    hotel: Hotels = models.ForeignKey('Hotels', on_delete=PROTECT, null=True, blank=True,
+    hotel: Hotels = models.ForeignKey('Hotels', on_delete=PROTECT,
                                       related_name='rooms', verbose_name='Отель')
 
     objects = models.Manager()

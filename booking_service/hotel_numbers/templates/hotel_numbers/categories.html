@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Категории номеров в отеле "{{ hotel_name }}"{% endblock %}
+
+{% block content %}
+    <h1>Отель "{{ hotel_name }}"</h1>
+    <h2>Доступные категории номеров:</h2>
+
+    {% if categories %}
+        <ul>
+            {% for category in categories %}
+                <li>
+                    <a href="#">{{ category.name }}</a> <!-- Замените # на URL для вариантов номеров в этой категории -->
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>В этом отеле пока нет доступных категорий.</p>
+    {% endif %}
+
+    <a href="#">← Назад к списку отелей</a>
+{% endblock %}

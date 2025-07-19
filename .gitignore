@@ -26,3 +26,4 @@ db.sqlite3-journal
 .env.*
 !.env.example
 .DS_Store
+/booking_service/hotel_numbers/migrations/

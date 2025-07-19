@@ -1,28 +1,43 @@
 from django.http import HttpResponse, HttpResponseNotFound
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.shortcuts import render, redirect
+
+from hotel_numbers.models import Hotels, Rooms
 
 
 # Create your views here.
 
-def index(request):
-    return HttpResponse("Сайт с бронированием")
+def main(request):
+    hotels = Hotels.objects.all()
+    data = {
+        'hotels': hotels
+    }
+    return render(request, 'hotel_numbers/main.html', context=data)
 
 
-def hotels(request):
-    return HttpResponse("Отели")
+def hotel_list(request):
+    hotels = Hotels.objects.all()
+    data = {
+        'hotels': hotels
+    }
+    return render(request, 'hotel_numbers/hotel_list.html', context=data)
 
 
 def categories(request, hotel_id):
-    return HttpResponse(f"<h1>Категории номеров</h1><p>Типы комнат<p>")
+    return render(request, 'hotel_numbers/categories')
 
 
-def room_variants(request, hotel_id, category):
-    return HttpResponse("Варианты комнат")
+def room_list(request, hotel_id, category):
+    rooms = Rooms.objects.all()
+    data = {
+        'room': rooms
+    }
+    return render(request, 'hotel_numbers/room_list',context=data)
 
 
 def room_preview(request, hotel_id, category, room_id):
-    return HttpResponse(f"Комната{room_id}")
+    return render(request, 'hotel_numbers/room_detail')
 
 
 def plans_for_future(request, year):
