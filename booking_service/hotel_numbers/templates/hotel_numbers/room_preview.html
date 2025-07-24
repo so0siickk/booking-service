@@ -6,12 +6,12 @@
     <nav aria-label="breadcrumb">
         <ol>
             <li><a href="{% url 'hotel_numbers:hotel_list' %}">Отели</a></li>
-            <li><a href="{% url 'hotel_numbers:hotel_detail' room.hotel.id %}">{{ room.hotel.title }}</a></li>
-            <!-- Ссылку на категорию здесь сделать сложнее, если она не хранится в модели Room -->
-            <li>{{ room.title }}</li>
+            <li><a href="{% url 'hotel_numbers:hotel_detail' room.hotel.slug %}">{{ room.hotel.title }}</a></li>
+            <li><a href="{% url 'hotel_numbers:room_list' room.hotel.slug room.category %}">Категория: {{ room.get_category_display }}</a></li>
+            <li style="color: #555;">{{ room.title }}</li>
         </ol>
     </nav>
-    
+
     <h1>{{ room.title }}</h1>
     <h2>в отеле "{{ room.hotel.title }}"</h2>
 
@@ -19,27 +19,25 @@
         <p><strong>Цена за ночь:</strong> {{ room.price }} руб.</p>
         <p><strong>Количество спальных мест:</strong> {{ room.sleep_places }}</p>
         <p><strong>Этаж:</strong> {{ room.floor }}</p>
-        <p><strong>Статус:</strong> {{ room.get_status_display }}</p>
 
-        {% if room.status == 0 %} {# BOOKED #}
-            <p><strong>Забронирован с:</strong> {{ room.date_start_booked|date:"d.m.Y" }}</p>
-            <p><strong>Забронирован по:</strong> {{ room.date_end_booked|date:"d.m.Y" }}</p>
+        {% if current_booking %}
+            {# --- НАЧАЛО ЕДИНСТВЕННОГО ПРАВИЛЬНОГО БЛОКА --- #}
+            <p><strong>Статус:</strong> <span style="color: red;">Забронирован</span></p>
+            <p><strong>Забронирован с:</strong> {{ current_booking.start_date|date:"d.m.Y" }}</p>
+            <p><strong>Забронирован по:</strong> {{ current_booking.end_date|date:"d.m.Y" }}</p>
+        {% else %}
+            <p><strong>Статус:</strong> <span style="color: green;">Свободен</span></p>
+            <hr>
+            <form action="" method="post" style="margin-top: 20px;">
+                {% csrf_token %}
+                <h3>Забронировать номер</h3>
+                {{ form.as_p }}
+                <button type="submit">Забронировать</button>
+            </form>
         {% endif %}
+        {# --- КОНЕЦ ЕДИНСТВЕННОГО ПРАВИЛЬНОГО БЛОКА --- #}
     </div>
 
-    <hr>
-
-    {% if room.status == 1 %} {# AVAILABLE #}
-        <form action="" method="post">
-            {% csrf_token %}
-            <h3>Забронировать номер</h3>
-            <!-- Здесь могут быть поля для выбора дат -->
-            <button type="submit">Забронировать</button>
-        </form>
-    {% else %}
-        <p style="color: red;">Этот номер сейчас забронирован.</p>
-    {% endif %}
-
     <br>
-    <a href="#">← Назад к вариантам номеров</a>
+    <a href="{% url 'hotel_numbers:room_list' room.hotel.slug room.category %}">← Назад к списку номеров</a>
 {% endblock %}

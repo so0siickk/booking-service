@@ -11,7 +11,7 @@
                 <li>
                     <h3>
                         <!-- Ссылка на детальную страницу отеля -->
-                        <a href="{% url 'hotel_numbers:hotel_detail' hotel.id %}">
+                        <a href="{% url 'hotel_numbers:hotel_detail' hotel.slug %}">
                             {{ hotel.title }}
                         </a>
                     </h3>

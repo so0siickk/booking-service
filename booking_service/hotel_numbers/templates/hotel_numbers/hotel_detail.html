@@ -8,13 +8,13 @@
     <hr>
     <h2>Категории номеров:</h2>
 
-    {% if categories %}
+    {% if rooms_by_category %}
         <ul>
-            {% for category in categories %}
+            {% for room in rooms_by_category %}
                 <li>
                     <!-- Ссылка на список номеров этой категории -->
-                    <a href="{% url 'hotel_numbers:room_list' hotel.id category.name %}">
-                        {{ category.name }}
+                    <a href="{% url 'hotel_numbers:room_list' hotel.slug room.category %}">
+                        {{ room.get_category_display }}
                     </a>
                 </li>
             {% endfor %}
