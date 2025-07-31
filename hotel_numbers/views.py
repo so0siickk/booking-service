@@ -1,14 +1,13 @@
 from django.utils import timezone
 from django.http import HttpResponseNotFound
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-from hotel_numbers.forms import BookingForm
-from hotel_numbers.models import Hotels, Rooms, Booking
+from hotel_numbers.forms import BookingSiteForm
+from hotel_numbers.models import Hotel, Room, Booking
 
-
-# Create your views here.
 
 def main(request):
-    hotels = Hotels.objects.all()
+    hotels = Hotel.objects.all()
     data = {
         'hotels': hotels
     }
@@ -16,7 +15,7 @@ def main(request):
 
 
 def hotel_list(request):
-    hotels = Hotels.objects.all()
+    hotels = Hotel.objects.all()
     data = {
         'hotels': hotels
     }
@@ -24,15 +23,8 @@ def hotel_list(request):
 
 
 def hotel_detail(request, hotel_slug):
-    hotel = Hotels.objects.get(slug=hotel_slug)
-    # unique_rooms_by_category = Rooms.objects.filter(pk__in=rooms_id) для postgres
-    unique_rooms_by_category = []
-    category_seen = []
-    all_rooms = Rooms.objects.all()
-    for room in all_rooms:
-        if room.category not in category_seen:
-            unique_rooms_by_category.append(room)
-            category_seen.append(room.category)
+    hotel = Hotel.objects.get(slug=hotel_slug)
+    unique_rooms_by_category = Room.objects.filter(hotel=hotel).order_by('category', '-price').distinct('category')
     data = {
         'hotel': hotel,
         'rooms_by_category': unique_rooms_by_category
@@ -42,8 +34,8 @@ def hotel_detail(request, hotel_slug):
 
 def room_list(request, hotel_slug, category):
     sort_option = request.GET.get('sort', 'price_asc')
-    hotel = get_object_or_404(Hotels, slug=hotel_slug)
-    rooms_query = Rooms.objects.filter(hotel=hotel, category=category)
+    hotel = get_object_or_404(Hotel, slug=hotel_slug)
+    rooms_query = Room.objects.filter(hotel=hotel, category=category)
     match sort_option:
         case 'price_asc':
             rooms = rooms_query.order_by('price')
@@ -55,7 +47,7 @@ def room_list(request, hotel_slug, category):
             rooms = rooms_query.order_by('-date_added')
         case _:
             rooms = rooms_query.order_by('price')
-    category_choices = dict(Rooms.Categories.choices)
+    category_choices = dict(Room.Categories.choices)
     category_name = category_choices.get(category, category)
     data = {
         'rooms': rooms,
@@ -67,10 +59,10 @@ def room_list(request, hotel_slug, category):
 
 
 def room_preview(request, hotel_slug, room_slug):
-    room = get_object_or_404(Rooms, slug=room_slug,hotel__slug=hotel_slug)
+    room = get_object_or_404(Room, slug=room_slug, hotel__slug=hotel_slug)
     form = None
     if request.method == "POST":
-        form = BookingForm(request.POST)
+        form = BookingSiteForm(request.POST)
         if form.is_valid():
             start_date = form.cleaned_data.get('start_date')
             end_date = form.cleaned_data.get('end_date')
@@ -82,31 +74,28 @@ def room_preview(request, hotel_slug, room_slug):
             ).exists()
 
             if overlapping_bookings:
-                form.add_error(None,f'Номер забронирован на эти даты')
+                form.add_error(None, f'Номер забронирован на эти даты')
             else:
-                Booking.objects.create(start_date=form.cleaned_data.get('start_date'),
-                                       end_date=form.cleaned_data.get('end_date'),
-                                       room=room,
-                                       )
+                booking = form.save(commit=False)
+                booking.room = room
+                booking.save()
+                messages.success(request,
+                                 f"Отлично! Номер '{room.title}' забронирован с"
+                                 f" {booking.start_date.strftime('%d.%m.%Y')} по"
+                                 f" {booking.end_date.strftime('%d.%m.%Y')}.")
                 return redirect('hotel_numbers:room_preview', hotel_slug=hotel_slug, room_slug=room_slug)
     if form is None:
-        form = BookingForm()
-    today = timezone.now()
+        form = BookingSiteForm()
+    today = timezone.now().date()
     current_booking = room.bookings.filter(start_date__lte=today, end_date__gte=today).first()
+    future_bookings = room.bookings.filter(start_date__gte=today).order_by('start_date')
     data = {
         'room': room,
         'form': form,
-        'current_booking': current_booking
+        'current_booking': current_booking,
+        'future_bookings': future_bookings
     }
     return render(request, 'hotel_numbers/room_preview.html', context=data)
-
-
-def add_hotel(request, hotel_id):
-    return render(request, 'hotel_numbers/hotel_add')
-
-
-def add_room(request, hotel_id, category, room_id):
-    return render(request, 'hotel_numbers/room_add')
 
 
 def page_not_found(request, exception):

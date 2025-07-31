@@ -20,6 +20,7 @@ from hotel_numbers.views import page_not_found
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('hotel_numbers.api_urls')),
     path('', include('hotel_numbers.urls')),
 ]
 

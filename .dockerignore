@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Python / Poetry
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+.venv
+
+booking-service-MZ4EaGh4-py3.13/
+
+# Pytest & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+pytest.ini
+
+# Базы данных
+*.sqlite3
+postgres_data/
+datadump.json
+database_schema.sql
+
+# IDE и OS
+.idea/
+.vscode/
+.DS_Store
+
+# Медиа и статика (если они будут)
+media/
+staticfiles/

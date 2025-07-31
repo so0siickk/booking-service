@@ -12,7 +12,7 @@
             {% for hotel in hotels %}
                 <li>
                     <h3>
-                        <a href="#">{{ hotel.title }}</a> <!-- Замените # на URL для конкретного отеля -->
+                        <a href="{% url 'hotel_numbers:hotel_detail' hotel.slug %}">{{ hotel.title }}</a> <!-- Замените # на URL для конкретного отеля -->
                     </h3>
                     <p>Город: {{ hotel.city }}</p>
                 </li>
