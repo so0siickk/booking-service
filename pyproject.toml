@@ -1,0 +1,26 @@
+[project]
+name = "booking-service"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Савин Савелий",email = "savin.se@edu.spbstu.ru"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "ruff (>=0.12.3,<0.13.0)",
+    "pytest (>=8.4.1,<9.0.0)",
+    "django (>=5.2.4,<6.0.0)",
+    "ipython (>=9.4.0,<10.0.0)",
+    "django-extensions (>=4.1,<5.0)",
+    "psycopg2-binary (>=2.9.10,<3.0.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)",
+    "transliterate (>=1.10.2,<2.0.0)",
+    "coverage (>=7.10.1,<8.0.0)",
+    "pytest-django (>=4.11.1,<5.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

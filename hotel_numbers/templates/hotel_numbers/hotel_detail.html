@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Отель {{ hotel.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ hotel.title }}</h1>
+    <p><strong>Город:</strong> {{ hotel.city }}</p>
+    <hr>
+    <h2>Категории номеров:</h2>
+
+    {% if rooms_by_category %}
+        <ul>
+            {% for room in rooms_by_category %}
+                <li>
+                    <!-- Ссылка на список номеров этой категории -->
+                    <a href="{% url 'hotel_numbers:room_list' hotel.slug room.category %}">
+                        {{ room.get_category_display }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>В этом отеле пока нет доступных категорий.</p>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'hotel_numbers:hotel_list' %}">← Назад к списку отелей</a>
+{% endblock %}

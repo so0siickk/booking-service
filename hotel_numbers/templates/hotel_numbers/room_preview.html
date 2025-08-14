@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Номер {{ room.title }}{% endblock %}
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+        <ol>
+            <li><a href="{% url 'hotel_numbers:hotel_list' %}">Отели</a></li>
+            <li><a href="{% url 'hotel_numbers:hotel_detail' room.hotel.slug %}">{{ room.hotel.title }}</a></li>
+            <li><a href="{% url 'hotel_numbers:room_list' room.hotel.slug room.category %}">Категория: {{ room.get_category_display }}</a></li>
+            <li style="color: #555;">{{ room.title }}</li>
+        </ol>
+    </nav>
+
+    <h1>{{ room.title }}</h1>
+    <h2>в отеле "{{ room.hotel.title }}"</h2>
+
+    <div>
+        <p><strong>Цена за ночь:</strong> {{ room.price }} руб.</p>
+        <p><strong>Количество спальных мест:</strong> {{ room.sleep_places }}</p>
+        <p><strong>Этаж:</strong> {{ room.floor }}</p>
+
+        {% if current_booking %}
+            <p><strong>Статус на сегодня:</strong> <span style="color: red;">Забронирован до {{ current_booking.end_date|date:"d.m.Y" }}</span></p>
+        {% else %}
+            <p><strong>Статус на сегодня:</strong> <span style="color: green;">Свободен</span></p>
+        {% endif %}
+    </div>
+
+    <hr>
+
+    {# --- БЛОК ДЛЯ ФОРМЫ БРОНИРОВАНИЯ (Отображается ВСЕГДА) --- #}
+    <div class="booking-form">
+        <h3>Забронировать номер</h3>
+        <form action="" method="post" style="margin-top: 10px;">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {{ form.as_p }}
+            <button type="submit">Проверить и забронировать</button>
+        </form>
+    </div>
+
+    <hr>
+
+    {# --- БЛОК С ПРЕДСТОЯЩИМИ БРОНЯМИ (Подсказка для пользователя) --- #}
+    <div class="future-bookings">
+        <h3>Предстоящие бронирования для этого номера:</h3>
+        {% if future_bookings %}
+            <ul style="list-style-type: none; padding-left: 0;">
+                {% for booking in future_bookings %}
+                    <li style="background: #f1f1f1; padding: 5px; margin-bottom: 5px;">
+                        С {{ booking.start_date|date:"d.m.Y" }} по {{ booking.end_date|date:"d.m.Y" }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Предстоящих бронирований пока нет.</p>
+        {% endif %}
+    </div>
+
+    <br>
+    <a href="{% url 'hotel_numbers:room_list' room.hotel.slug room.category %}">← Назад к списку номеров</a>
+{% endblock %}

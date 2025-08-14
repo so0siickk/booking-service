@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+    <h1>Добро пожаловать в наш сервис!</h1>
+    <p>Выберите отель, чтобы посмотреть доступные номера и категории.</p>
+    
+    <h2>Наши отели:</h2>
+    {% if hotels %}
+        <ul>
+            {% for hotel in hotels %}
+                <li>
+                    <h3>
+                        <a href="{% url 'hotel_numbers:hotel_detail' hotel.slug %}">{{ hotel.title }}</a> <!-- Замените # на URL для конкретного отеля -->
+                    </h3>
+                    <p>Город: {{ hotel.city }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>На данный момент отелей нет.</p>
+    {% endif %}
+{% endblock %}
